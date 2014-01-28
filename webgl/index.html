@@ -2,29 +2,124 @@
 <html>
   <head>
     <title>WebGL Scale</title>
+    <script src="glMatrix.js"></script>
+    <script id="shader-fs" type="x-shader/x-fragment">
+      void main(void) {
+        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+      }
+    </script>
+
+    <script id="shader-vs" type="x-shader/x-vertex">
+      attribute vec3 aVertexPosition;
+
+      uniform mat4 uMVMatrix;
+      uniform mat4 uPMatrix;
+
+      void main(void) {
+        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+      }
+    </script>
+
     <script>
-      var canvas, gl, image, texture;
+      var canvas, gl, image, mvMatrix = mat4.create(), perspectiveMatrix = mat4.create(), shaderProgram, squareTextureBuffer, squareVerticesBuffer, texture, vertexPositionAttribute;
 
       function animate() {
-        gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        mat4.perspective(perspectiveMatrix, 45 * Math.PI / 180, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0);
 
+        loadIdentity();
+        mat4.translate(mvMatrix, mvMatrix, [-0.0, 0.0, -6.0]);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, squareVerticesBuffer);
+        gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
+        setMatrixUniforms();
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       }
 
-      function initWebGL() {
-        gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-        if(!gl) {
-          alert("unable to init webgl");
+      function getShader(gl, id) {
+        var shaderScript, theSource, currentChild, shader;
+
+        shaderScript = document.getElementById(id);
+        if(!shaderScript) {
+          return null;
         }
 
-        gl.viewportWidth = canvas.width;
-        gl.viewportHeight = canvas.height;
+        theSource = '';
+        currentChild = shaderScript.firstChild;
+
+        while(currentChild) {
+          if(currentChild.nodeType == currentChild.TEXT_NODE) {
+            theSource += currentChild.textContent;
+          }
+
+          currentChild = currentChild.nextSibling;
+        }
+
+        if(shaderScript.type == 'x-shader/x-fragment') {
+          shader = gl.createShader(gl.FRAGMENT_SHADER);
+        }
+        else if(shaderScript.type == 'x-shader/x-vertex') {
+          shader =gl.createShader(gl.VERTEX_SHADER);
+        }
+        else {
+          return null;
+        }
+
+        gl.shaderSource(shader, theSource);
+        gl.compileShader(shader);
+
+        if(!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+          alert("error compiling the shaders: " + gl.getShaderInfoLog(shader) + " | " + id);
+          return null;
+        }
+
+        return shader;
+      }
+
+      function initBuffers() {
+        squareVerticesBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, squareVerticesBuffer);
+
+        var vertices = [
+          1.0, 1.0, 0.0,
+          -1.0, 1.0, 0.0,
+          1.0, -1.0, 0.0,
+          -1.0, -1.0, 0.0
+        ];
+
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
+        squareTextureBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, squareTextureBuffer);
+
+        var textureCoords = [
+          0.0, 0.0,
+          1.0, 0.0,
+          1.0, 1.0,
+          0.0, 1.0
+        ];
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoords), gl.STATIC_DRAW);
+        gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, squareTextureBuffer, 2, gl.FLOAT, false, 0, 0);
+
       }
 
       function initShaders() {
         var fragmentShader = getShader(gl, "shader-fs");
         var vertexShader = getShader(gl, "shader-vs");
-        // left off: https://developer.mozilla.org/en-US/docs/Web/WebGL/Adding_2D_content_to_a_WebGL_context?redirectlocale=en-US&redirectslug=WebGL%2FAdding_2D_content_to_a_WebGL_context
+
+        shaderProgram = gl.createProgram();
+        gl.attachShader(shaderProgram, vertexShader);
+        gl.attachShader(shaderProgram, fragmentShader);
+        gl.linkProgram(shaderProgram);
+
+        if(!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+          alert("Unable to initialize the shader program");
+        }
+
+        gl.useProgram(shaderProgram);
+
+        vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+        gl.enableVertexAttribArray(vertexPositionAttribute);
       }
 
       function initTextures() {
@@ -42,6 +137,32 @@
         image.src = "background.png";
       }
 
+      function initWebGL() {
+        gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+        if(!gl) {
+          alert("unable to init webgl");
+        }
+
+        gl.viewportWidth = canvas.width;
+        gl.viewportHeight = canvas.height;
+      }
+
+      function loadIdentity() {
+        mat4.identity(mvMatrix);
+      }
+
+      function multMatrix(m) {
+        mat4.multiply(mvMatrix, m);
+      }
+
+      function setMatrixUniforms() {
+        var pUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
+        gl.uniformMatrix4fv(pUniform, false, perspectiveMatrix);
+
+        var mvUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+        gl.uniformMatrix4fv(mvUniform, false, mvMatrix);
+      }
+
       function update() {
         requestAnimationFrame(update);
         animate();
@@ -50,10 +171,14 @@
       window.onload = function() {
         canvas = document.getElementById("canvas");
         initWebGL();
+        initBuffers();
+        initShaders();
         initTextures();
 
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.enable(gl.DEPTH_TEST);
+
+        gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
 
         update();
       }
@@ -61,6 +186,5 @@
   </head>
   <body>
     <canvas id="canvas" width="1024" height="768"></canvas>
-    <script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>
   </body>
 </html>
