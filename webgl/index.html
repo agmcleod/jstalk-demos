@@ -4,34 +4,53 @@
     <title>WebGL Scale</title>
     <script src="glMatrix.js"></script>
     <script id="shader-fs" type="x-shader/x-fragment">
+      precision mediump float;
+
+      varying vec2 vTextureCoord;
+
+      uniform sampler2D uSampler;
+
       void main(void) {
-        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+        gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
       }
     </script>
 
     <script id="shader-vs" type="x-shader/x-vertex">
       attribute vec3 aVertexPosition;
+      attribute vec2 aTextureCoord;
 
       uniform mat4 uMVMatrix;
       uniform mat4 uPMatrix;
 
+      varying vec2 vTextureCoord;
+
       void main(void) {
         gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+        vTextureCoord = aTextureCoord;
       }
     </script>
 
     <script>
-      var canvas, gl, image, mvMatrix = mat4.create(), perspectiveMatrix = mat4.create(), shaderProgram, squareTextureBuffer, squareVerticesBuffer, texture, vertexPositionAttribute;
+      var canvas, gl, image, mvMatrix = mat4.create(), perspectiveMatrix = mat4.create(), shaderProgram, squareTextureBuffer, squareVerticesBuffer, texture;
 
       function animate() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         mat4.perspective(perspectiveMatrix, 45 * Math.PI / 180, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0);
 
         loadIdentity();
-        mat4.translate(mvMatrix, mvMatrix, [-0.0, 0.0, -6.0]);
+        mat4.translate(mvMatrix, mvMatrix, [-0.0, -0.25, -1.81]);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, squareVerticesBuffer);
-        gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
+        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
+
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, squareTextureBuffer);
+        gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, 2, gl.FLOAT, false, 0, 0);
+
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.uniform1i(shaderProgram.samplerUniform, 0);
+
         setMatrixUniforms();
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       }
@@ -93,14 +112,12 @@
         gl.bindBuffer(gl.ARRAY_BUFFER, squareTextureBuffer);
 
         var textureCoords = [
-          0.0, 0.0,
           1.0, 0.0,
+          0.0, 0.0,
           1.0, 1.0,
           0.0, 1.0
         ];
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoords), gl.STATIC_DRAW);
-        gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, squareTextureBuffer, 2, gl.FLOAT, false, 0, 0);
-
       }
 
       function initShaders() {
@@ -118,8 +135,11 @@
 
         gl.useProgram(shaderProgram);
 
-        vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
-        gl.enableVertexAttribArray(vertexPositionAttribute);
+        shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+        gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+
+        shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
+        gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
       }
 
       function initTextures() {
@@ -171,8 +191,8 @@
       window.onload = function() {
         canvas = document.getElementById("canvas");
         initWebGL();
-        initBuffers();
         initShaders();
+        initBuffers();
         initTextures();
 
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
