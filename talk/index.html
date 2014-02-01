@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Create games using HTML5</title>
+    <meta charset="utf-8" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <link rel="stylesheet" href="css/reveal.min.css">
+    <link rel="stylesheet" href="css/theme/blood.css" id="theme">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h1>Create games using HTML5</h1>
+          <p>
+            <small>Created by <strong>Aaron McLeod</strong></small>
+          </p>
+          <p>
+            <small>Twitter: <strong>@agmcleod</strong></small>
+          </p>
+          <p>
+            <small><strong><u>http://agmprojects.com</u></strong></small>
+          </p>
+        </section>
+        <section>
+          <h2>Overview</h2>
+          <ul>
+            <li>Benefits</li>
+            <li>Downsides</li>
+            <li>Canvas or WebGL?</li>
+            <li>Tooling</li>
+            <li>Getting started</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Benefits</h2>
+        </section>
+        <section>
+          <img src="css/internet-world.jpeg" />
+        </section>
+        <section>
+          <img src="css/javascript-logo.png" />
+        </section>
+        <section>
+          <h2>Downsides</h2>
+          <img src="css/downside.jpg" />
+        </section>
+        <section>
+          <h2>Monetization</h2>
+          <p>Users tend to play most web games for free.</p>
+        </section>
+      </div>
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.min.js"></script>
+
+    <script>
+
+      // Full list of configuration options available here:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+
+        theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+        transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+        // Parallax scrolling
+        // parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+        // parallaxBackgroundSize: '2100px 900px',
+
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+          { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+          { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+        ]
+      });
+
+    </script>
+  </body>
+</html>
