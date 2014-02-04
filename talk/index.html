@@ -63,8 +63,8 @@
         </section>
         <section>
           <h3>Performance differences between the two</h3>
-          <a href="" target="_blank">Canvas</a>
-          <a href="" target="_blank">WebGL</a>
+          <a href="../phaser#canvas" target="_blank">Canvas</a>
+          <a href="../phaser" target="_blank">WebGL</a>
         </section>
         <section>
           <h3>Sprite batching</h3>
@@ -75,7 +75,7 @@
           <ul>
             <li>Super easy drawing API</li>
             <li>Really easy to scale your drawings, and have it look amazing</li>
-            <li>Better support across devices. WebGL doesnt run in mobile safari</li>
+            <li>Better support across devices. As WebGL doesnt run in mobile safari</li>
           </ul>
         </section>
         <section>
@@ -96,7 +96,7 @@
           <h2>Tooling</h2>
         </section>
         <section>
-          <h2>The performance problem</h2>
+          <h2>JS Performance</h2>
           <p>Aaron, make javascript go faster!</p>
         </section>
         <section>
@@ -110,7 +110,61 @@
           <h3>ASM.js & Emscripten</h3>
         </section>
         <section>
+          <h3>Low Level Javascript</h3>
+          <pre>
+            struct Point {
+              int x, y;
+            }
+
+            let Point p;
+            p.x = 10;
+            p.y = 50;
+
+            let Point *a = &p;
+            a->p.x = 20;
+          </pre>
+        </section>
+        <section>
+          <p><strong>My thoughts on Emscripten</strong></p>
+        </section>
+        <section>
           <h3>Cocoon JS</h3>
+        </section>
+        <section>
+          <h3>Engines</h3>
+          <ul>
+            <li>Phaser - Canvas & WebGL</li>
+            <li>Turbulenz - Canvas & WebGL</li>
+            <li>MelonJS</li>
+          </ul>
+        </section>
+
+        <section>
+          <ul><li>Animation Support</li>
+          <li>Object pooling</li>
+          <li>Physics & Math support</li>
+          <li>Texture packing</li>
+          <li>Tiled map editor</li>
+          <li>Screens/game states (Title screen, play screen, pause)</li>
+          <li>Simplistic camera, can have it follow an entity as it moves around</li>
+          <li>Spine (skeletal animation). Though the implementation is very early.</li>
+          </ul>
+        </section>
+        <section>
+          <h3>So how to get into games?</h3>
+          <p>http://html5gameengines.com</p>
+        </section>
+        <section>
+          <h2>Thanks!</h2>
+          <p>
+            <small><strong>Aaron McLeod</strong></small>
+          </p>
+          <p>
+            <small>Twitter: <strong>@agmcleod</strong></small>
+          </p>
+          <p>
+            <small><strong><u>http://agmprojects.com</u></strong></small>
+          </p>
         </section>
       </div>
     </div>
