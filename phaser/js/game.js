@@ -11,7 +11,7 @@ function init() {
   else {
     renderer = Phaser.WEBGL;
   }
-  game = new Phaser.Game( window.innerWidth, window.innerWidth, Phaser.CANVAS, 'game', {
+  game = new Phaser.Game( window.innerWidth, window.innerWidth, renderer, 'game', {
     preload : preload,
     create : create,
     update : update
