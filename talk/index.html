@@ -118,7 +118,7 @@
           <ul>
             <li class="fragment">Draw only what is on the screen</li>
             <li class="fragment">Where possible, only update objects on the screen</li>
-            <li class="fragment">Limit your collision detection</li>
+            <li class="fragment">Limit heavy calculations</li>
           </ul>
         </section>
         <section>
@@ -126,6 +126,18 @@
         </section>
         <section>
           <h3>ASM.js & Emscripten</h3>
+        </section>
+        <section>
+          <p>&ldquo;The asm.js programming model is built around integer and floating-point arithmetic and a virtual heap represented as a typed array&rdquo; <br /><cite>- <a href="http://asmjs.org/spec/latest/#introduction">ASM.js spec</a></cite></p>
+        </section>
+        <section>
+          <pre>
+            // HEAP32 is a Int32Array
+            HEAP32[p >> 2]|0
+          </pre>
+        </section>
+        <section>
+          <p>Emscripten is an LLVM to JavaScript compiler.</p>
         </section>
         <section>
           <h3>Low Level Javascript</h3>
